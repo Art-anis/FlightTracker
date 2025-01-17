@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">FlightTracker</string>
+    <string name="first_launch">First Launch</string>
+    <string name="cities_loaded">Loaded cities</string>
+    <string name="cities_size">Cities list size</string>
+    <string name="airports_loaded">Loaded airports</string>
+    <string name="airports_size">Airports list size</string>
+    <string name="total_progress">Total loading progress</string>
+    <string name="data_loading_notification">For further functioning of the app, some data has to be loaded. Please wait.</string>
+    <string name="proceed">Proceed</string>
+    <string name="ok">OK</string>
+</resources>
