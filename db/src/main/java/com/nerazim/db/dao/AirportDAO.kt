@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.nerazim.db.entities.AirportEntity
+import kotlinx.coroutines.flow.Flow
 
 //DAO аэропортов
 @Dao
@@ -20,5 +21,5 @@ interface AirportDAO {
 
     //поиск аэропорта по подсказке
     @Query("SELECT * FROM airports WHERE airport_name LIKE :hint")
-    suspend fun searchAirports(hint: String): List<AirportEntity>
+    fun searchAirports(hint: String): Flow<List<AirportEntity>>
 }

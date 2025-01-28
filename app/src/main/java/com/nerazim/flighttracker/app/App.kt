@@ -3,6 +3,7 @@ package com.nerazim.flighttracker.app
 import android.app.Application
 import android.preference.PreferenceManager
 import com.nerazim.db.di.databaseModule
+import com.nerazim.domain.di.domainModule
 import com.nerazim.flighttracker.R
 import com.nerazim.flighttracker.data_loading.AirportLoader
 import com.nerazim.flighttracker.data_loading.CityLoader
@@ -27,7 +28,7 @@ class App: Application() {
 
             androidContext(applicationContext)
 
-            modules(listOf(appModule, networkModule, databaseModule))
+            modules(listOf(appModule, domainModule, networkModule, databaseModule))
         }
 
         //SharedPref

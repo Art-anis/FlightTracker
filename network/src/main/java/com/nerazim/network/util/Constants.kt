@@ -1,12 +1,14 @@
 package com.nerazim.network.util
 
+import kotlinx.serialization.Serializable
+
 //константы сетевого модуля
 object Constants {
     //базовый URL
     const val BASE_URL = "https://aviation-edge.com/v2/public/"
 
     //статус рейса
-    enum class FlightStatus(value: String) {
+    enum class FlightStatus(val value: String) {
         LANDED("landed"),
         SCHEDULED("scheduled"),
         CANCELLED("cancelled"),
@@ -18,7 +20,8 @@ object Constants {
     }
 
     //тип единицы расписания
-    enum class ScheduleType(value: String) {
+    @Serializable
+    enum class ScheduleType(val value: String) {
         DEPARTURE("departure"),
         ARRIVAL("arrival")
     }

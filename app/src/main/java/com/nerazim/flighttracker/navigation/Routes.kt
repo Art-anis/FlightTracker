@@ -1,5 +1,7 @@
 package com.nerazim.flighttracker.navigation
 
+import com.nerazim.network.util.Constants
+
 //класс маршрутов для навигационного графа
 sealed class Routes(
     val route: String
@@ -8,7 +10,9 @@ sealed class Routes(
         route = "Поиск рейсов"
     )
 
-    data object AirportSearch: Routes(
+    data class AirportSearch(
+        val type: Constants.ScheduleType = Constants.ScheduleType.DEPARTURE
+    ): Routes(
         route = "Поиск аэропорта"
     )
 

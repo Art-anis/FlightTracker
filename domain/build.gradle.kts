@@ -1,36 +1,17 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    kotlin("plugin.serialization") version "2.0.21"
 }
 
 android {
-    namespace = "com.nerazim.network"
-    compileSdk = 35
-
-    buildFeatures {
-        buildConfig = true
-    }
+    namespace = "com.nerazim.domain"
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 24
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        val keyStoreFile = project.rootProject.file("apikey.properties")
-        val properties = Properties()
-        properties.load(keyStoreFile.inputStream())
-
-        val apiKey = properties.getProperty("API_KEY") ?: ""
-
-        buildConfigField(
-            type = "String",
-            name = "API_KEY",
-            value = apiKey
-        )
     }
 
     buildTypes {
@@ -56,12 +37,11 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(project(":db"))
+    implementation(project(":network"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation(libs.koin.core)
-    implementation(libs.koin.android)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.com.squareup.retrofit)
-    implementation(libs.com.squareup.converter.gson)
 }

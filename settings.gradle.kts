@@ -23,3 +23,4 @@ rootProject.name = "FlightTracker"
 include(":app")
 include(":network")
 include(":db")
+include(":domain")
