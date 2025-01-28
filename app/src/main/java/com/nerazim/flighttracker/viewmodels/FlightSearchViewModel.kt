@@ -38,7 +38,8 @@ class FlightSearchViewModel(
     val airports: LiveData<List<AirportUIModel>> = _airports
 
     private var _currentAirportType: Constants.ScheduleType = Constants.ScheduleType.DEPARTURE
-    val currentAirportType = _currentAirportType
+    val currentAirportType: Constants.ScheduleType
+        get() = _currentAirportType
 
     //получение аэропортов по подсказке
     fun getAirports(hint: String) {
