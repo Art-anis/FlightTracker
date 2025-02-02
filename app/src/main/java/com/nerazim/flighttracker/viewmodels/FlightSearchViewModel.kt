@@ -11,6 +11,8 @@ import com.nerazim.flighttracker.ui_models.AirportUIModel
 import com.nerazim.flighttracker.util.toAirportUIModel
 import com.nerazim.network.util.Constants
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -37,22 +39,38 @@ class FlightSearchViewModel(
     private val _airports: MutableLiveData<List<AirportUIModel>> = MutableLiveData()
     val airports: LiveData<List<AirportUIModel>> = _airports
 
+    //тип аэропорта: прибытие/вылет
     private var _currentAirportType: Constants.ScheduleType = Constants.ScheduleType.DEPARTURE
     val currentAirportType: Constants.ScheduleType
         get() = _currentAirportType
 
+    //ссылка на корутину, которая грузит данные
+    private var loadingJob: Job = Job()
+    //флаг загрузки данных из БД
+    private var isLoading: Boolean = false
+
     //получение аэропортов по подсказке
     fun getAirports(hint: String) {
-        viewModelScope.launch {
+        //если мы ранее отправляли запрос на загрузку, отменяем его
+        if (isLoading) {
+            loadingJob.cancel()
+            isLoading = false
+        }
+        //запускаем запрос
+        loadingJob = viewModelScope.launch {
+            isLoading = true
             //получаем аэропорты
             getAirportsUseCase.execute(hint).flowOn(Dispatchers.IO).collect { result: List<AirportEntity> ->
                 val list = result.map {
+                    //на каждом шаге проверяем, что этот запрос не был отменен
+                    ensureActive()
                     //получаем название города
                     val cityName = if (it.cityIata != "empty") {
                         getCityUseCase.execute(it.cityIata).name
                     } else {
                         ""
                     }
+                    //преобразуем результат в модель для UI
                     it.toAirportUIModel(cityName)
                 }
                 //обновление списка
@@ -71,6 +89,7 @@ class FlightSearchViewModel(
         _arrival.value = airport
     }
 
+    //обновление типа аэропорта (прибытие/вылет)
     fun setAirportType(type: Constants.ScheduleType) {
         _currentAirportType = type
     }

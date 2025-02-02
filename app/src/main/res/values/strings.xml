@@ -9,4 +9,6 @@
     <string name="data_loading_notification">For further functioning of the app, some data has to be loaded. Please wait.</string>
     <string name="proceed">Proceed</string>
     <string name="ok">OK</string>
+    <string name="airports_search_placeholder">Search airports…</string>
+    <string name="airports_search_result">Search results</string>
 </resources>
