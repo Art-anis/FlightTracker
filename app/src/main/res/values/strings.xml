@@ -13,6 +13,9 @@
     <string name="airports_search_placeholder">Search airports…</string>
     <string name="airports_search_result">Search results</string>
     <string name="airports_history_result">Recent airports</string>
+    <string name="departure_placeholder">Select your departure</string>
+    <string name="arrival_placeholder">Select your arrival</string>
+    <string name="date_header">Date: </string>
     <string name="departure">Departure</string>
     <string name="arrival">Arrival</string>
 </resources>

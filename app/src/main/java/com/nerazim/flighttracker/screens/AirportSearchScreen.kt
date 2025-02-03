@@ -81,7 +81,8 @@ fun AirportSearchScreen(
             TextField(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
-                    .fillMaxWidth(0.8f),
+                    .padding(end = 16.dp)
+                    .fillMaxWidth(),
                 value = hint,
                 //закругленные углы
                 shape = RoundedCornerShape(size = 20.dp),
