@@ -3,6 +3,9 @@ package com.nerazim.flighttracker.util
 import com.nerazim.db.entities.AirportEntity
 import com.nerazim.flighttracker.ui_models.AirportUIModel
 import com.nerazim.network.models.ResponseAirport
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 //конвертирование модели для API в модель для БД
 fun ResponseAirport.toAirportEntity(): AirportEntity {
@@ -15,6 +18,7 @@ fun ResponseAirport.toAirportEntity(): AirportEntity {
     )
 }
 
+//конвертирование модели БД в модель для UI
 fun AirportEntity.toAirportUIModel(cityName: String): AirportUIModel {
     return AirportUIModel(
         airportName = this.name,
@@ -22,4 +26,9 @@ fun AirportEntity.toAirportUIModel(cityName: String): AirportUIModel {
         cityName = cityName,
         countryName = this.countryName
     )
+}
+
+//конвертирование даты в текст
+fun Date.toText(): String {
+    return SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(this)
 }

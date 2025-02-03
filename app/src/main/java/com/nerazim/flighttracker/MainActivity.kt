@@ -105,7 +105,7 @@ class MainActivity : ComponentActivity() {
                                 onNavigateBack = {
                                     navController.popBackStack()
                                 },
-                                viewModel = sharedViewModel
+                                flightSearchViewModel = sharedViewModel
                             )
                         }
 

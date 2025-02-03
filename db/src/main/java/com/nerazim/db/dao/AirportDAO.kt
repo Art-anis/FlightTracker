@@ -20,6 +20,14 @@ interface AirportDAO {
     fun getRandomAirport(): AirportEntity?
 
     //поиск аэропорта по подсказке
-    @Query("SELECT * FROM airports WHERE airport_name LIKE :hint")
+    @Query("SELECT * FROM airports WHERE airport_name LIKE :hint OR iata_code LIKE :hint")
     fun searchAirports(hint: String): Flow<List<AirportEntity>>
+
+    //обновление времени поиска аэропорта
+    @Query("UPDATE airports SET last_search = :searchTime WHERE airport_name = :name")
+    fun selectAirport(name: String, searchTime: Long)
+
+    //получение истории поиска
+    @Query("SELECT * FROM airports ORDER BY last_search DESC LIMIT 3")
+    suspend fun getLastSearchedAirports(): List<AirportEntity>
 }

@@ -8,8 +8,13 @@ import com.nerazim.db.entities.AirportEntity
 import com.nerazim.db.entities.CityEntity
 
 //база данных
-@Database(entities = [AirportEntity::class, CityEntity::class], version = 1, exportSchema = false)
+@Database(
+    entities = [AirportEntity::class, CityEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class AppDatabase: RoomDatabase() {
+
     //объявление всех DAO, которые Room соберет
     abstract fun airportDao(): AirportDAO
     abstract fun cityDao(): CityDAO

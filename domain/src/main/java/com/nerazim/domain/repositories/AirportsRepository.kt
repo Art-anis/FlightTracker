@@ -2,6 +2,8 @@ package com.nerazim.domain.repositories
 
 import com.nerazim.db.dao.AirportDAO
 import com.nerazim.db.entities.AirportEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 //репозиторий для аэропортов
 class AirportsRepository(
@@ -14,4 +16,14 @@ class AirportsRepository(
     suspend fun addAirport(airport: AirportEntity) {
         dao.addAirport(airport)
     }
+
+    //выбор аэропорта и попутное обновление времени поиска
+    suspend fun selectAirport(name: String, time: Long) {
+        withContext(Dispatchers.IO) {
+            dao.selectAirport(name = name, searchTime = time)
+        }
+    }
+
+    //получение истории
+    suspend fun getHistory() = dao.getLastSearchedAirports()
 }

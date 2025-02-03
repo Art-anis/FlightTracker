@@ -2,6 +2,7 @@ package com.nerazim.flighttracker.di
 
 import com.nerazim.flighttracker.data_loading.AirportLoader
 import com.nerazim.flighttracker.data_loading.CityLoader
+import com.nerazim.flighttracker.viewmodels.AirportSearchViewModel
 import com.nerazim.flighttracker.viewmodels.FlightSearchViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -13,8 +14,13 @@ val appModule = module {
     single { AirportLoader() }
 
     //viewmodel для поиска рейсов
-    viewModel<FlightSearchViewModel> { FlightSearchViewModel(
-        getCityUseCase = get(),
-        getAirportsUseCase = get()
-    ) }
+    viewModel<FlightSearchViewModel> { FlightSearchViewModel() }
+
+    //viewmodel для поиска аэропортов
+    viewModel<AirportSearchViewModel> {
+        AirportSearchViewModel(
+            airportsRepository = get(),
+            citiesRepository = get()
+        )
+    }
 }

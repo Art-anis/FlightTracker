@@ -13,7 +13,8 @@ fun provideDatabase(context: Context): AppDatabase {
         context,
         AppDatabase::class.java,
         "flight_tracker_db"
-        ).build()
+        )
+        .build()
 }
 
 //предоставление DAO аэропортов
