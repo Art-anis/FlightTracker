@@ -14,7 +14,11 @@ val appModule = module {
     single { AirportLoader() }
 
     //viewmodel для поиска рейсов
-    viewModel<FlightSearchViewModel> { FlightSearchViewModel() }
+    viewModel<FlightSearchViewModel> {
+        FlightSearchViewModel(
+            repository = get()
+        )
+    }
 
     //viewmodel для поиска аэропортов
     viewModel<AirportSearchViewModel> {

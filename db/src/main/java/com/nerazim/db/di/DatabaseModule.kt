@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.nerazim.db.dao.AirportDAO
 import com.nerazim.db.dao.CityDAO
+import com.nerazim.db.dao.FlightSearchHistoryDAO
 import com.nerazim.db.database.AppDatabase
 import org.koin.dsl.module
 
@@ -27,6 +28,10 @@ fun provideCityDao(db: AppDatabase): CityDAO {
     return db.cityDao()
 }
 
+fun provideFlightsHistoryDAO(db: AppDatabase): FlightSearchHistoryDAO {
+    return db.flightSearchHistoryDao()
+}
+
 //модуль БД для DI
 val databaseModule = module {
     //инстанс БД
@@ -35,4 +40,5 @@ val databaseModule = module {
     //DAO
     single { provideAirportDao(db = get()) }
     single { provideCityDao(db = get()) }
+    single { provideFlightsHistoryDAO(db = get()) }
 }

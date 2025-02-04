@@ -68,6 +68,7 @@ dependencies {
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.com.squareup.retrofit)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.kotlinx.serialization.json)
     implementation(project(":network"))
     implementation(project(":db"))

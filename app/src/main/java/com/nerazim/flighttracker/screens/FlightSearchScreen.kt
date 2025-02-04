@@ -1,9 +1,8 @@
 package com.nerazim.flighttracker.screens
 
-import android.app.Dialog
 import android.content.SharedPreferences
+import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,19 +11,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -38,17 +38,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
+import com.nerazim.db.entities.FlightSearchHistory
 import com.nerazim.flighttracker.R
+import com.nerazim.flighttracker.ui_models.FlightSearchUIModel
 import com.nerazim.flighttracker.util.toText
 import com.nerazim.flighttracker.viewmodels.FlightSearchViewModel
 import com.nerazim.network.util.Constants
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 //экран поиска рейсов, первый экран, который видит пользователь (если нет загрузки данных)
 @Composable
@@ -66,9 +66,8 @@ fun FlightSearchScreen(
     }
 
     //состояния
-    val departure by viewModel.departure.observeAsState() //вылет
-    val arrival by viewModel.arrival.observeAsState() //прибытие
-    val date by viewModel.date.observeAsState() //дата
+    val state by viewModel.searchState.observeAsState() //объект поиска
+    val history by viewModel.history.observeAsState() //история поиска
 
     Column {
         //компонент для поиска
@@ -77,12 +76,13 @@ fun FlightSearchScreen(
             onNavigateToFlights = onNavigateToFlights,
             setDateType = viewModel::setDateType,
             updateDate = viewModel::setDate,
-            departure = departure?.airportName ?: stringResource(R.string.departure_placeholder),
-            arrival = arrival?.airportName ?: stringResource(R.string.arrival_placeholder),
-            date = stringResource(R.string.date_header) + date?.toText()
+            addToHistory = viewModel::addToHistory,
+            state = state ?: FlightSearchUIModel()
         )
         //компонент истории поиска
-        RecentSearchesComponent()
+        RecentSearchesComponent(
+            history = history ?: listOf()
+        )
     }
 }
 
@@ -93,10 +93,27 @@ fun SearchComponent(
     onNavigateToFlights: () -> Unit,
     setDateType: (type: Constants.ScheduleType) -> Unit,
     updateDate: (Long?) -> Unit,
-    departure: String,
-    arrival: String,
-    date: String
+    addToHistory: () -> Unit,
+    state: FlightSearchUIModel
 ) {
+    val departureText = state.departure.let {
+        if (it.airportName != "") {
+            "${it.airportName}, ${it.cityName}"
+        }
+        else {
+            stringResource(R.string.departure_placeholder)
+        }
+    }
+
+    val arrivalText = state.arrival.let {
+        if (it.airportName != "") {
+            "${it.airportName}, ${it.cityName}"
+        }
+        else {
+            stringResource(R.string.arrival_placeholder)
+        }
+    }
+
     //общий контейнер
     Column(
         modifier = Modifier
@@ -107,7 +124,7 @@ fun SearchComponent(
         Spacer(modifier = Modifier.height(16.dp))
         //текст для точки вылета
         Text(
-            text = departure,
+            text = departureText,
             modifier = Modifier
                 .padding(horizontal = 16.dp) //margin
                 .clip(RoundedCornerShape(10.dp)) //обрезанные углы
@@ -121,7 +138,7 @@ fun SearchComponent(
         Spacer(modifier = Modifier.height(4.dp))
         //текст для точки прибытия
         Text(
-            text = arrival,
+            text = arrivalText,
             modifier = Modifier
                 .padding(horizontal = 16.dp) //margin
                 .clip(RoundedCornerShape(10.dp)) //обрезанные углы
@@ -145,7 +162,7 @@ fun SearchComponent(
 
             //текст для даты
             Text(
-                text = date,
+                text = state.date.toText(),
                 modifier = Modifier
                     .padding(horizontal = 16.dp) //margin
                     .clip(RoundedCornerShape(10.dp)) //обрезанные углы
@@ -202,9 +219,24 @@ fun SearchComponent(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
+            //контекст для тостов
+            val context = LocalContext.current
             Button(
                 modifier = Modifier.fillMaxWidth(0.75f),
-                onClick = onNavigateToFlights,
+                onClick = {
+                    //проверяем, что все поля заполнены
+                    if (state.departure.airportName == "") {
+                        Toast.makeText(context, "Departure is missing!", Toast.LENGTH_SHORT).show()
+                    }
+                    else if (state.arrival.airportName == "") {
+                        Toast.makeText(context, "Arrival is missing!", Toast.LENGTH_SHORT).show()
+                    }
+                    else {
+                        //добавляем рейс в историю и запускаем поиск
+                        addToHistory()
+                        onNavigateToFlights()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.on_teal)
                 )
@@ -250,11 +282,29 @@ fun FlightDatePicker(
         }
     ) {
         //календарь
-        DatePicker(state = datePickerState)
+        DatePicker(
+            state = datePickerState
+        )
     }
 }
 
 @Composable
-fun RecentSearchesComponent() {
-
+fun RecentSearchesComponent(
+    history: List<FlightSearchHistory>
+) {
+    LazyColumn {
+        itemsIndexed(history) { index, flight ->
+            Column {
+                Row {
+                    Icon(Icons.Filled.History, contentDescription = null)
+                    Text(
+                        text = "From ${flight.departure} to ${flight.arrival}"
+                    )
+                }
+                if (index < history.lastIndex) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+        }
+    }
 }

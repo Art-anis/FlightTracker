@@ -3,28 +3,24 @@ package com.nerazim.flighttracker.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.nerazim.db.entities.FlightSearchHistory
+import com.nerazim.domain.repositories.FlightsRepository
 import com.nerazim.flighttracker.ui_models.AirportUIModel
+import com.nerazim.flighttracker.ui_models.FlightSearchUIModel
 import com.nerazim.network.util.Constants
-import java.text.SimpleDateFormat
-import java.time.LocalDate
+import kotlinx.coroutines.launch
 import java.util.Date
-import java.util.Locale
 
 //viewmodel поиска рейсов
-class FlightSearchViewModel: ViewModel() {
+class FlightSearchViewModel(
+    private val repository: FlightsRepository
+): ViewModel() {
 
-    //пункт вылета
-    private val _departure: MutableLiveData<AirportUIModel> = MutableLiveData()
-    val departure: LiveData<AirportUIModel> = _departure
-
-    //пункт прибытия
-    private val _arrival: MutableLiveData<AirportUIModel> = MutableLiveData()
-    val arrival: LiveData<AirportUIModel> = _arrival
-
-    //дата вылета/прибытия
-    private var _date: MutableLiveData<Date> = MutableLiveData(Date())
-    val date: LiveData<Date>
-        get() = _date
+    //состояние объекта поиска
+    private var _searchState: MutableLiveData<FlightSearchUIModel> = MutableLiveData(FlightSearchUIModel())
+    val searchState: LiveData<FlightSearchUIModel>
+        get() = _searchState
 
     //тип выбираемой даты: дата вылета или дата прибытия
     private var _dateType: MutableLiveData<Constants.ScheduleType> = MutableLiveData(Constants.ScheduleType.DEPARTURE)
@@ -36,14 +32,49 @@ class FlightSearchViewModel: ViewModel() {
     val currentAirportType: Constants.ScheduleType
         get() = _currentAirportType
 
+    //история поиска рейсов
+    private var _history: MutableLiveData<List<FlightSearchHistory>> = MutableLiveData()
+    val history: LiveData<List<FlightSearchHistory>>
+        get() = _history
+
+    init {
+        getHistory()
+    }
+
+    //получение истории поиска из БД
+    private fun getHistory() {
+        viewModelScope.launch {
+            //получаем историю и маппим ее в UI-модели
+            _history.value = repository
+                .getHistory()
+        }
+    }
+
+    //добавление элемента в историю поиска
+    fun addToHistory() {
+        viewModelScope.launch {
+            repository.addFlightHistory(
+                flight = FlightSearchHistory(
+                    departure = _searchState.value?.departure?.airportName ?: "",
+                    arrival = _searchState.value?.arrival?.airportName ?: ""
+                )
+            )
+            getHistory()
+        }
+    }
+
     //обновление аэропорта вылета
     fun setDepartureAirport(airport: AirportUIModel) {
-        _departure.value = airport
+        _searchState.value = _searchState.value?.copy(
+            departure = airport
+        )
     }
 
     //обновление аэропорта прибытия
     fun setArrivalAirport(airport: AirportUIModel) {
-        _arrival.value = airport
+        _searchState.value = _searchState.value?.copy(
+            arrival = airport
+        )
     }
 
     //обновление типа аэропорта (прибытие/вылет)
@@ -54,7 +85,9 @@ class FlightSearchViewModel: ViewModel() {
     //обновление даты
     fun setDate(date: Long?) {
         date?.let {
-            _date.value = Date(date)
+            _searchState.value = _searchState.value?.copy(
+                date = Date(date)
+            )
         }
     }
 

@@ -1,7 +1,9 @@
 package com.nerazim.flighttracker.util
 
 import com.nerazim.db.entities.AirportEntity
+import com.nerazim.db.entities.FlightSearchHistory
 import com.nerazim.flighttracker.ui_models.AirportUIModel
+import com.nerazim.flighttracker.ui_models.FlightSearchUIModel
 import com.nerazim.network.models.ResponseAirport
 import java.text.SimpleDateFormat
 import java.util.Date
