@@ -9,5 +9,10 @@ import org.koin.dsl.module
 val domainModule = module {
     single { CitiesRepository(dao = get()) }
     single { AirportsRepository(dao = get()) }
-    single { FlightsRepository(historyDao = get(), schedulesAPI = get(), futureSchedulesAPI = get()) }
+    single { FlightsRepository(
+        historyDao = get(),
+        cityDAO = get(),
+        schedulesAPI = get(),
+        futureSchedulesAPI = get()
+    ) }
 }

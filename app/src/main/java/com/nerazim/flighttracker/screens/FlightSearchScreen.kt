@@ -49,6 +49,7 @@ import com.nerazim.flighttracker.ui_models.FlightSearchUIModel
 import com.nerazim.flighttracker.util.toText
 import com.nerazim.flighttracker.viewmodels.FlightSearchViewModel
 import com.nerazim.network.util.Constants
+import kotlinx.coroutines.selects.select
 
 //экран поиска рейсов, первый экран, который видит пользователь (если нет загрузки данных)
 @Composable
@@ -81,7 +82,8 @@ fun FlightSearchScreen(
         )
         //компонент истории поиска
         RecentSearchesComponent(
-            history = history ?: listOf()
+            history = history ?: listOf(),
+            selectItem = viewModel::selectFromHistory
         )
     }
 }
@@ -290,12 +292,17 @@ fun FlightDatePicker(
 
 @Composable
 fun RecentSearchesComponent(
-    history: List<FlightSearchHistory>
+    history: List<FlightSearchHistory>,
+    selectItem: (FlightSearchHistory) -> Unit
 ) {
     LazyColumn {
         itemsIndexed(history) { index, flight ->
             Column {
-                Row {
+                Row(
+                    modifier = Modifier.clickable {
+                        selectItem(flight)
+                    }
+                ) {
                     Icon(Icons.Filled.History, contentDescription = null)
                     Text(
                         text = "From ${flight.departure} to ${flight.arrival}"

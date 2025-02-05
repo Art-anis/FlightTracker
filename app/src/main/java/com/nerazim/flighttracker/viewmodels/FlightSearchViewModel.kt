@@ -8,6 +8,7 @@ import com.nerazim.db.entities.FlightSearchHistory
 import com.nerazim.domain.repositories.FlightsRepository
 import com.nerazim.flighttracker.ui_models.AirportUIModel
 import com.nerazim.flighttracker.ui_models.FlightSearchUIModel
+import com.nerazim.flighttracker.util.toAirportUIModel
 import com.nerazim.network.util.Constants
 import kotlinx.coroutines.launch
 import java.util.Date
@@ -44,7 +45,7 @@ class FlightSearchViewModel(
     //получение истории поиска из БД
     private fun getHistory() {
         viewModelScope.launch {
-            //получаем историю и маппим ее в UI-модели
+            //получаем историю
             _history.value = repository
                 .getHistory()
         }
@@ -59,7 +60,23 @@ class FlightSearchViewModel(
                     arrival = _searchState.value?.arrival?.airportName ?: ""
                 )
             )
+            //обновление истории во viewmodel
             getHistory()
+        }
+    }
+
+    //выбрать рейс из истории поиска
+    fun selectFromHistory(flight: FlightSearchHistory) {
+        viewModelScope.launch {
+            //получаем аэропорта и города точек назначения
+            val (departure, arrival) = repository.getFlightFromHistory(flight)
+            val departureCity = repository.getCityForAirport(departure)
+            val arrivalCity = repository.getCityForAirport(arrival)
+
+            //обновляем точки назначения
+            setDepartureAirport(departure.toAirportUIModel(departureCity.name))
+            setArrivalAirport(arrival.toAirportUIModel(arrivalCity.name))
+            addToHistory()
         }
     }
 

@@ -1,7 +1,7 @@
 package com.nerazim.flighttracker.di
 
-import com.nerazim.flighttracker.data_loading.AirportLoader
-import com.nerazim.flighttracker.data_loading.CityLoader
+import com.nerazim.domain.data_loading.AirportLoader
+import com.nerazim.domain.data_loading.CityLoader
 import com.nerazim.flighttracker.viewmodels.AirportSearchViewModel
 import com.nerazim.flighttracker.viewmodels.FlightSearchViewModel
 import org.koin.core.module.dsl.viewModel

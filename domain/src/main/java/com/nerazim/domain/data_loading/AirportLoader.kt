@@ -1,9 +1,9 @@
-package com.nerazim.flighttracker.data_loading
+package com.nerazim.domain.data_loading
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.nerazim.db.dao.AirportDAO
-import com.nerazim.flighttracker.util.toAirportEntity
+import com.nerazim.domain.util.toAirportEntity
 import com.nerazim.network.api.AirportsAPI
 import com.nerazim.network.models.ResponseAirport
 import kotlinx.coroutines.Dispatchers

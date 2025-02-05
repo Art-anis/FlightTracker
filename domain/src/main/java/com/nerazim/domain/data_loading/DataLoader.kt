@@ -1,4 +1,4 @@
-package com.nerazim.flighttracker.data_loading
+package com.nerazim.domain.data_loading
 
 import android.content.Context
 import android.content.SharedPreferences

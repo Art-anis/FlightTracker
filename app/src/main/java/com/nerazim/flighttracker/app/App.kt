@@ -5,8 +5,8 @@ import android.preference.PreferenceManager
 import com.nerazim.db.di.databaseModule
 import com.nerazim.domain.di.domainModule
 import com.nerazim.flighttracker.R
-import com.nerazim.flighttracker.data_loading.AirportLoader
-import com.nerazim.flighttracker.data_loading.CityLoader
+import com.nerazim.domain.data_loading.AirportLoader
+import com.nerazim.domain.data_loading.CityLoader
 import com.nerazim.flighttracker.di.appModule
 import com.nerazim.network.di.networkModule
 import kotlinx.coroutines.MainScope
